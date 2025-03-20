@@ -1,0 +1,60 @@
+{
+    "configurations": [
+        {
+            "name": "cart",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/app/cart"
+        },
+        {
+            "name": "checkout",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/app/checkout"
+        },
+        {
+            "name": "frontend",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/app/frontend"
+        },
+        {
+            "name": "payment",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/app/payment"
+        },
+        {
+            "name": "product",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/app/product"
+        },
+        {
+            "name": "user",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/app/user"
+        },
+        {
+            "name": "order",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/app/order"
+        },
+        {
+            "name": "email",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/app/email"
+        }
+    ]
+}
