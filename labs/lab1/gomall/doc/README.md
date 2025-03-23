@@ -93,7 +93,13 @@ go env -w GOPROXY=https://mirrors.aliyun.com/goproxy/
 
 ## 3. 任务
 
-### 3.1 开发order和checkout服务
+### 3.1 将数据库中的数据映射到存储卷(或本机文件系统)以实现数据持久化
+
+当前`gomall-middlewares/docker-compose.yml`中的`mysql`没有将数据映射到存储卷或本机文件系统，因此每次删除并重新创建数据库容器后，数据都会丢失。你的任务是修改`gomall-middlewares/docker-compose.yml`文件，将`mysql`的数据映射到存储卷或本机文件系统中，以实现数据持久化。
+
+修改后，使用`docker compose down`命令停止并删除所有中间件容器，然后使用`docker compose up -d`命令重新启动所有容器。你应该确保之后再次删除并重新创建`mysql`容器后，数据库内的数据不会丢失。
+
+### 3.2 开发order和checkout服务
 
 在玩的过程中，你会发现系统中的`order`和`checkout`服务还没有实现。例如，当登录后查看订单时，返回的是一些假数据。此外，在购物车中结账时，也完全没有实现计算价格、生成订单、扣除款项等功能。
 
@@ -101,7 +107,7 @@ go env -w GOPROXY=https://mirrors.aliyun.com/goproxy/
 
 你的任务是找到`app/checkout/biz/service/checkout.go`、`app/order/biz/service/list_order.go`和`app/order/biz/service/place_order.go`等文件，实现其中标有`TODO`的部分。具体实现指导详见代码中的注释。
 
-### 3.2 使用Docker对服务进行容器化
+### 3.3 使用Docker对服务进行容器化
 
 在完成服务的开发后，你需要将服务容器化。你需要为每个微服务编写一个`Dockerfile`文件，并使用`docker build`命令构建镜像。
 
@@ -115,7 +121,7 @@ go env -w GOPROXY=https://mirrors.aliyun.com/goproxy/
   
 最终，你应该能够使用`docker run`命令启动每个服务的容器，并且这些容器应该能够正常运行。
 
-### 3.3 将容器推送到远程镜像仓库（选做）
+### 3.4 将容器推送到远程镜像仓库（选做）
 
 在完成容器化后，你可以将镜像推送到远程镜像仓库。你可以在[Docker Hub](https://hub.docker.com/)上注册一个账号，然后使用`docker login`命令登录。之后，使用`docker tag`命令给镜像打标签，再使用`docker push`命令推送到远程仓库。
 
@@ -123,7 +129,7 @@ go env -w GOPROXY=https://mirrors.aliyun.com/goproxy/
 
 如果你做了这一步，请在实验文档中说明你推送到了哪个镜像仓库，镜像的名称，以及如何拉取这个镜像。
 
-### 3.4 使用Docker Compose编排多个容器
+### 3.5 使用Docker Compose编排多个容器
 
 在完成容器化后，你需要使用Docker Compose编排多个容器，实现服务的联合部署。你需要编写一个`docker-compose.yml`文件，定义多个服务的容器，以及它们之间的网络、依赖关系等。
 
@@ -141,19 +147,21 @@ go env -w GOPROXY=https://mirrors.aliyun.com/goproxy/
 
 本次Lab的评分标准如下：
 
-| 评估项                           | 权重  |
-|--------------------------------|------|
-| order和checkout服务的功能正确性，代码质量等 | 30%  |
-| 服务的容器化是否成功，容器的运行是否正常 | 30%  |
-| 是否成功推送到远程镜像仓库         | 10%  |
-| Docker Compose编排的正确性       | 20%  |
-| 实验报告                         | 10%  |
+| 评估项                                      | 权重 |
+| ------------------------------------------- | ---- |
+| MySQL数据持久化是否成功                     | 5%   |
+| order和checkout服务的功能正确性，代码质量等 | 25%  |
+| 服务的容器化是否成功，容器的运行是否正常    | 30%  |
+| 是否成功推送到远程镜像仓库                  | 10%  |
+| Docker Compose编排的正确性                  | 20%  |
+| 实验报告                                    | 10%  |
 
 
 ## 5. 提交
 
 请将整个`gomall`目录打包成`zip`文件，命名为`gomall-<小组编号>.zip`，并提交到Elearning上。提交的内容需至少包含：
 
+- 修改后的`gomall-middlewares/docker-compose.yml`文件
 - 每个服务的源代码，及对应的`Dockerfile`文件
 - 你推送到远程镜像仓库的镜像名称（如果做了3.3）
 - 用来编排多个容器的`docker-compose.yml`文件
