@@ -14,7 +14,6 @@ require (
 	github.com/kr/pretty v0.3.1
 	github.com/nats-io/nats.go v1.31.0
 	github.com/redis/go-redis/v9 v9.3.1
-	google.golang.org/protobuf v1.33.0
 	gopkg.in/validator.v2 v2.0.1
 	gopkg.in/yaml.v2 v2.4.0
 	gorm.io/driver/mysql v1.5.2
@@ -87,5 +86,6 @@ require (
 	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/genproto v0.0.0-20231211222908-989df2bf70f3 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20231212172506-995d672761c0 // indirect
+	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
