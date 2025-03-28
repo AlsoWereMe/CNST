@@ -20,8 +20,10 @@ import (
 	// "github.com/cloudwego/biz-demo/gomall/app/order/biz/dal/mysql"
 	// "github.com/cloudwego/biz-demo/gomall/app/order/biz/model"
 	// "github.com/cloudwego/biz-demo/gomall/rpc_gen/kitex_gen/cart"
+	"github.com/cloudwego/biz-demo/gomall/app/order/biz/dal/mysql"
+	"github.com/cloudwego/biz-demo/gomall/app/order/biz/model"
 	order "github.com/cloudwego/biz-demo/gomall/rpc_gen/kitex_gen/order"
-	"github.com/cloudwego/kitex/pkg/klog"
+	"github.com/cloudwego/kitex/pkg/kerrors"
 )
 
 type ListOrderService struct {
@@ -34,25 +36,22 @@ func NewListOrderService(ctx context.Context) *ListOrderService {
 // Run create note info
 func (s *ListOrderService) Run(req *order.ListOrderReq) (resp *order.ListOrderResp, err error) {
 	// TODO 请实现ListOrder的业务逻辑，从数据库中的order表和order_item表中查询数据
-	// 可以参考其他服务的源代码实现这个函数
-	klog.Warnf("ListOrderService.Run not implemented")
+	// 参数校验
+	if req.GetUserId() == 0 {
+		return nil, kerrors.NewBizStatusError(400, "invalid user id")
+	}
 
-	defaultOrder := &order.Order{
-		OrderId:      "1145141919810",
-		UserId:       114514,
-		UserCurrency: "JPY",
-		Address: &order.Address{
-			StreetAddress: "114514",
-			City:          "114514",
-			State:         "114514",
-			Country:       "JP",
-			ZipCode:       114514,
-		},
-		OrderItems: []*order.OrderItem{},
-		CreatedAt:  1145141919,
+	// 根据uid,从数据库order表中获取订单列表orders
+	var orders []model.Order
+	orders, err = model.ListOrder(mysql.DB, s.ctx, req.GetUserId())
+	if err != nil {
+		return nil, err
 	}
-	resp = &order.ListOrderResp{
-		Orders: []*order.Order{defaultOrder},
+
+	// 处理orders格式为协议层后返回resp
+	var resOrders []*order.Order
+	for _, o := range orders {
+		resOrders = append(resOrders, model.ToProtoOrder(o))
 	}
-	return
+	return &order.ListOrderResp{Orders: resOrders}, nil
 }

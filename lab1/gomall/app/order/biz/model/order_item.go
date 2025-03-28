@@ -14,6 +14,12 @@
 
 package model
 
+import (
+	"context"
+
+	"gorm.io/gorm"
+)
+
 type OrderItem struct {
 	Base
 	ProductId    uint32
@@ -24,4 +30,12 @@ type OrderItem struct {
 
 func (oi OrderItem) TableName() string {
 	return "order_item"
+}
+
+func CreateOrderItems(db *gorm.DB, ctx context.Context, items []OrderItem) error {
+	return db.WithContext(ctx).
+		Model(&OrderItem{}).
+		// 默认每次至多插入一百条
+		CreateInBatches(items, 100).
+		Error
 }

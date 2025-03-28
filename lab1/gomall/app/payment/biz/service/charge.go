@@ -63,8 +63,5 @@ func (s *ChargeService) Run(req *payment.ChargeReq) (resp *payment.ChargeResp, e
 	if err != nil {
 		return nil, err
 	}
-	if err != nil {
-		return nil, err
-	}
 	return &payment.ChargeResp{TransactionId: translationId.String()}, nil
 }
