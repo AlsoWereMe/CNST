@@ -68,7 +68,7 @@ func (s *CheckoutService) Run(req *checkout.CheckoutReq) (resp *checkout.Checkou
 	}
 	cartClient, _ := cartservice.NewClient(
 		"cart",
-		client.WithHostPorts("127.0.0.1:8883"),
+		client.WithHostPorts("cart:8883"),
 	)
 	cartResp, err := cartClient.GetCart(s.ctx, &cart.GetCartReq{UserId: userId})
 	if err != nil {
@@ -83,7 +83,7 @@ func (s *CheckoutService) Run(req *checkout.CheckoutReq) (resp *checkout.Checkou
 	}
 	productClient, _ := productcatalogservice.NewClient(
 		"product",
-		client.WithHostPorts("127.0.0.1:8881"),
+		client.WithHostPorts("product:8881"),
 	)
 
 	// 计算购物车中某商品总价cost与全部总价amount，而后构建订单项
@@ -106,7 +106,7 @@ func (s *CheckoutService) Run(req *checkout.CheckoutReq) (resp *checkout.Checkou
 	// 3. create order（根据第1步和第2步的信息，创建order.PlaceOrderReq，并使用RPC调用Order服务创建订单）
 	orderClient, _ := orderservice.NewClient(
 		"order",
-		client.WithHostPorts("127.0.0.1:8885"),
+		client.WithHostPorts("order:8885"),
 	)
 
 	// 将数据层的string型ZipCode转为协议层的int32型
@@ -142,7 +142,7 @@ func (s *CheckoutService) Run(req *checkout.CheckoutReq) (resp *checkout.Checkou
 	// 5. pay（使用RPC调用Payment服务进行支付）
 	paymentClient, _ := paymentservice.NewClient(
 		"payment",
-		client.WithHostPorts("127.0.0.1:8886"),
+		client.WithHostPorts("payment:8886"),
 	)
 
 	chargeResp, err := paymentClient.Charge(s.ctx, &payment.ChargeReq{

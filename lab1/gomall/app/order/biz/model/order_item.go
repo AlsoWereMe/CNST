@@ -32,10 +32,9 @@ func (oi OrderItem) TableName() string {
 	return "order_item"
 }
 
-func CreateOrderItems(db *gorm.DB, ctx context.Context, items []OrderItem) error {
+func CreateOrderItem(db *gorm.DB, ctx context.Context, item OrderItem) error {
 	return db.WithContext(ctx).
 		Model(&OrderItem{}).
-		// 默认每次至多插入一百条
-		CreateInBatches(items, 100).
+		Create(&item).
 		Error
 }

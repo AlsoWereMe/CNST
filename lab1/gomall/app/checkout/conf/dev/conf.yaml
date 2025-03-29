@@ -10,18 +10,18 @@ kitex:
 
 registry:
   registry_address:
-    - host.docker.internal:8500
+    - consul:8500
   username: ""
   password: ""
 
 mysql:
-  dsn: "gorm:gorm@tcp(host.docker.internal:13306)/gorm?charset=utf8mb4&parseTime=True&loc=Local"
+  dsn: "root:root@tcp(mysql:3306)/checkout?charset=utf8mb4&parseTime=True&loc=Local"
 
 redis:
-  address: "host.docker.internal:16379"
+  address: "redis:6379"
   username: ""
   password: ""
   db: 0
 
 nats:
-  url: "nats://host.docker.internal:4222"
+  url: "nats://nats:4222"

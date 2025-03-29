@@ -10,15 +10,15 @@ kitex:
 
 registry:
   registry_address:
-    - host.docker.internal:8500
+    - consul:8500
   username: ""
   password: ""
 
 mysql:
-  dsn: "%s:%s@tcp(%s:13306)/order?charset=utf8mb4&parseTime=True&loc=Local"
+  dsn: "%s:%s@tcp(%s:3306)/order?charset=utf8mb4&parseTime=True&loc=Local"
 
 redis:
-  address: "host.docker.internal:16379"
+  address: "redis:6379"
   username: ""
   password: ""
   db: 0
