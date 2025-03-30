@@ -20,13 +20,11 @@ import (
 
 	// "fmt"
 
-	// "github.com/cloudwego/biz-demo/gomall/app/order/biz/dal/mysql"
 	"github.com/cloudwego/biz-demo/gomall/app/order/biz/dal/mysql"
 	"github.com/cloudwego/biz-demo/gomall/app/order/biz/model"
 	order "github.com/cloudwego/biz-demo/gomall/rpc_gen/kitex_gen/order"
 	"github.com/cloudwego/kitex/pkg/kerrors"
 	"github.com/google/uuid"
-	// "github.com/google/uuid"
 	// "gorm.io/gorm"
 )
 
@@ -92,10 +90,12 @@ func (s *PlaceOrderService) Run(req *order.PlaceOrderReq) (resp *order.PlaceOrde
 		return nil, err
 	}
 
-	// 在主订单后，将订单项写入数据库
-	err = model.CreateOrderItems(mysql.DB, s.ctx, orderItems)
-	if err != nil {
-		return nil, err
-	}
+	// // 在主订单后，将订单项写入数据库
+	// for _, item := range orderItems {
+	// 	err = model.CreateOrderItem(mysql.DB, s.ctx, item)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+	// }
 	return &order.PlaceOrderResp{Order: &order.OrderResult{OrderId: orderId.String()}}, nil
 }

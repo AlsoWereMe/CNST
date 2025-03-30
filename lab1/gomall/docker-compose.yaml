@@ -1,0 +1,112 @@
+# docker-compose.yml
+services:
+  product:
+    container_name: gomall-product
+    build:
+      dockerfile: ./app/product/Dockerfile
+    environment:
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=root
+      - MYSQL_HOST=gomall-mysql
+      - REDIS_HOST=gomall-redis
+      - CONSUL_ADDR=gomall-consul:8500
+    networks:
+      - gomall
+    volumes:
+      - ./app/product/conf:/conf
+  user:
+    container_name: gomall-user
+    build:
+      dockerfile: ./app/user/Dockerfile
+    environment:
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=root
+      - MYSQL_HOST=gomall-mysql
+      - REDIS_HOST=gomall-redis
+    networks:
+      - gomall
+    volumes:
+      - ./app/user/conf:/conf
+  cart:
+    container_name: gomall-cart
+    build:
+      dockerfile: ./app/cart/Dockerfile
+    environment:
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=root
+      - MYSQL_HOST=gomall-mysql
+    networks:
+      - gomall
+    volumes:
+      - ./app/cart/conf:/conf
+  checkout:
+    container_name: gomall-checkout
+    build:
+      dockerfile: ./app/checkout/Dockerfile
+    depends_on:
+      - order
+      - cart
+      - payment
+      - product
+    environment:
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=root
+      - MYSQL_HOST=gomall-mysql
+    networks:
+      - gomall
+    volumes:
+      - ./app/checkout/conf:/conf
+  order:
+    container_name: gomall-order
+    build:
+      dockerfile: ./app/order/Dockerfile
+    environment:
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=root
+      - MYSQL_HOST=gomall-mysql
+    networks:
+      - gomall
+    volumes:
+      - ./app/order/conf:/conf
+  payment:
+    container_name: gomall-payment
+    build:
+      dockerfile: ./app/payment/Dockerfile
+    environment:
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=root
+      - MYSQL_HOST=gomall-mysql
+    networks:
+      - gomall
+    volumes:
+      - ./app/payment/conf:/conf
+  email:
+    container_name: gomall-email
+    build:
+      dockerfile: ./app/email/Dockerfile
+    networks:
+      - gomall
+    volumes:
+      - ./app/email/conf:/conf
+  frontend:
+    container_name: gomall-frontend
+    build:
+      dockerfile: ./app/frontend/Dockerfile
+    depends_on:
+      - product
+      - user
+      - cart
+      - checkout
+      - order
+      - payment
+      - email
+    ports:
+      - "8080:8080"
+    networks:
+      - gomall
+    volumes:
+      - ./app/frontend/conf:/conf
+
+networks:
+  gomall:
+    external: true

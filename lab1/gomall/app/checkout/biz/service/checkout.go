@@ -61,14 +61,14 @@ func NewCheckoutService(ctx context.Context) *CheckoutService {
 7. finish
 */
 func (s *CheckoutService) Run(req *checkout.CheckoutReq) (resp *checkout.CheckoutResp, err error) {
-	// TODO 1.get cart (使用RPC调用Cart服务以获得购物车信息)
+	// 1. get cart (使用RPC调用Cart服务以获得购物车信息)
 	userId := req.GetUserId()
 	if userId == 0 {
 		return nil, kerrors.NewBizStatusError(400, "invalid user id")
 	}
 	cartClient, _ := cartservice.NewClient(
 		"cart",
-		client.WithHostPorts("127.0.0.1:8883"),
+		client.WithHostPorts("cart:8883"),
 	)
 	cartResp, err := cartClient.GetCart(s.ctx, &cart.GetCartReq{UserId: userId})
 	if err != nil {
@@ -76,14 +76,14 @@ func (s *CheckoutService) Run(req *checkout.CheckoutReq) (resp *checkout.Checkou
 	}
 	userCart := cartResp.GetCart()
 
-	// TODO 2.calc cart（根据第1步的购物车信息，计算总价和订单项信息）
+	// 2. calc cart（根据第1步的购物车信息，计算总价和订单项信息）
 	cartItems := userCart.GetItems()
 	if cartItems == nil {
 		return nil, kerrors.NewBizStatusError(400, "invalid cart items")
 	}
 	productClient, _ := productcatalogservice.NewClient(
 		"product",
-		client.WithHostPorts("127.0.0.1:8881"),
+		client.WithHostPorts("product:8881"),
 	)
 
 	// 计算购物车中某商品总价cost与全部总价amount，而后构建订单项
@@ -103,10 +103,10 @@ func (s *CheckoutService) Run(req *checkout.CheckoutReq) (resp *checkout.Checkou
 		})
 	}
 
-	// TODO 3.create order（根据第1步和第2步的信息，创建order.PlaceOrderReq，并使用RPC调用Order服务创建订单）
+	// 3. create order（根据第1步和第2步的信息，创建order.PlaceOrderReq，并使用RPC调用Order服务创建订单）
 	orderClient, _ := orderservice.NewClient(
 		"order",
-		client.WithHostPorts("127.0.0.1:8885"),
+		client.WithHostPorts("order:8885"),
 	)
 
 	// 将数据层的string型ZipCode转为协议层的int32型
@@ -124,6 +124,7 @@ func (s *CheckoutService) Run(req *checkout.CheckoutReq) (resp *checkout.Checkou
 		ZipCode:       int32(zipCode),
 	}
 
+	// 创建订单
 	orderResp, err := orderClient.PlaceOrder(s.ctx, &order.PlaceOrderReq{
 		UserId:       userId,
 		UserCurrency: "CNY",
@@ -135,13 +136,13 @@ func (s *CheckoutService) Run(req *checkout.CheckoutReq) (resp *checkout.Checkou
 		return nil, err
 	}
 
-	// TODO 4.empty cart（使用RPC调用Cart服务清空购物车）
+	// 4. empty cart（使用RPC调用Cart服务清空购物车）
 	cartClient.EmptyCart(s.ctx, &cart.EmptyCartReq{UserId: userId})
 
-	// TODO 5.pay（使用RPC调用Payment服务进行支付）
+	// 5. pay（使用RPC调用Payment服务进行支付）
 	paymentClient, _ := paymentservice.NewClient(
 		"payment",
-		client.WithHostPorts("127.0.0.1:8886"),
+		client.WithHostPorts("payment:8886"),
 	)
 
 	chargeResp, err := paymentClient.Charge(s.ctx, &payment.ChargeReq{
@@ -154,7 +155,7 @@ func (s *CheckoutService) Run(req *checkout.CheckoutReq) (resp *checkout.Checkou
 		return nil, err
 	}
 
-	// TODO 6.send email（使用MQ发送邮件通知）
+	// 6. send email（使用MQ发送邮件通知）
 	data, _ := proto.Marshal(&email.EmailReq{
 		From:        "22302010051@m.fudan.edu.cn",
 		To:          req.Email,
@@ -165,10 +166,10 @@ func (s *CheckoutService) Run(req *checkout.CheckoutReq) (resp *checkout.Checkou
 	msg := &nats.Msg{Subject: "email", Data: data}
 	err = mq.Nc.PublishMsg(msg)
 	if err != nil {
-		klog.Errorf("发送邮件消息失败: %v", err)
+		klog.Errorf("Failed to send message: %v", err)
 	}
 
-	// TODO 7.finish（返回订单ID和支付结果）
+	// 7. finish（返回订单ID和支付结果）
 	return &checkout.CheckoutResp{
 		OrderId:       orderResp.GetOrder().GetOrderId(),
 		TransactionId: chargeResp.GetTransactionId(),
