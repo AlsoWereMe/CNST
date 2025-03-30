@@ -14,7 +14,6 @@ services:
       - gomall
     volumes:
       - ./app/product/conf:/conf
-
   user:
     container_name: gomall-user
     build:
@@ -28,7 +27,6 @@ services:
       - gomall
     volumes:
       - ./app/user/conf:/conf
-
   cart:
     container_name: gomall-cart
     build:
@@ -41,7 +39,6 @@ services:
       - gomall
     volumes:
       - ./app/cart/conf:/conf
-
   checkout:
     container_name: gomall-checkout
     build:
@@ -59,7 +56,6 @@ services:
       - gomall
     volumes:
       - ./app/checkout/conf:/conf
-
   order:
     container_name: gomall-order
     build:
@@ -72,7 +68,6 @@ services:
       - gomall
     volumes:
       - ./app/order/conf:/conf
-
   payment:
     container_name: gomall-payment
     build:
@@ -85,7 +80,14 @@ services:
       - gomall
     volumes:
       - ./app/payment/conf:/conf
-
+  email:
+    container_name: gomall-email
+    build:
+      dockerfile: ./app/email/Dockerfile
+    networks:
+      - gomall
+    volumes:
+      - ./app/email/conf:/conf
   frontend:
     container_name: gomall-frontend
     build:
@@ -97,6 +99,7 @@ services:
       - checkout
       - order
       - payment
+      - email
     ports:
       - "8080:8080"
     networks:
